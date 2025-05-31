@@ -3,7 +3,6 @@
 A real-time coding battleground where users can compete solo or in multiplayer mode by solving coding challenges and UI tasks. Features include live chat, leaderboards, and user authentication with role-based access.
 
 ---
----
 
 ## Tech Stack
 
