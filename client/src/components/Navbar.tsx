@@ -32,7 +32,7 @@ export default function Navbar({ isLoggedIn, onLogout }: NavbarProps) {
       <div className="flex space-x-6 text-white text-lg font-medium">
         {isLoggedIn ? (
           <>
-            <Link to="/problems" className="hover:text-purple-300 transition duration-300">Problems</Link>
+            <Link to="#" className="hover:text-purple-300 transition duration-300">Play with friends</Link>
             <Link to="/leaderboard" className="hover:text-purple-300 transition duration-300">Leaderboard</Link>
             <Link to="/community" className="hover:text-purple-300 transition duration-300">Community</Link>
             <button

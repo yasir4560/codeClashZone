@@ -25,6 +25,6 @@ app.use(cookieParser())
 
 
 app.use('/api/auth',authRoute);
-app.use('/api', problemRoute);
+app.use('/api/problems', problemRoute);
 
 server.listen(PORT,()=>console.log(`Server is running on port ${PORT}`));

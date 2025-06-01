@@ -1,15 +1,17 @@
-async function handleProblems(req, res) {
+const Frontend = require('../models/frontend');
+
+async function handleFrontendProblems(req, res) {
     try {
-        // Simulate fetching problems from a database
-        const problems = [
-            { id: 1, title: 'Problem 1', description: 'Description of problem 1' },
-            { id: 2, title: 'Problem 2', description: 'Description of problem 2' },
-        ];
+        const problems = await Frontend.find({});
+        console.log('Frontend problems fetched successfully:', problems.length);
+        
         res.status(200).json(problems);
     } catch (error) {
-        console.error('Error fetching problems:', error);
+        console.error('Error fetching frontend problems:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
-};
+}
 
-module.exports = {handleProblems};
+module.exports = {
+    handleFrontendProblems
+};

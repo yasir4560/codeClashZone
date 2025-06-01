@@ -2,6 +2,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { setUser } = require('../auth/authController');
+const { sendWelcomeEmail } = require('../mail/mailService');
 
 async function handleSignUp(req,res){
     const {name,email,password} = req.body;
@@ -16,6 +17,7 @@ async function handleSignUp(req,res){
             email,
             password: hashedPassword
         });
+        await sendWelcomeEmail(email, name);
         res.status(201).json({ message: 'User created successfully' });
     }
     catch (error) {
