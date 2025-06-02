@@ -34,6 +34,7 @@ export default function Navbar({ isLoggedIn, onLogout }: NavbarProps) {
           <>
             <Link to="#" className="hover:text-purple-300 transition duration-300">Play with friends</Link>
             <Link to="/leaderboard" className="hover:text-purple-300 transition duration-300">Leaderboard</Link>
+            <Link to="/submissions" className="hover:text-purple-300 transition duration-300">Submissions</Link>
             <Link to="/community" className="hover:text-purple-300 transition duration-300">Community</Link>
             <button
               onClick={handleLogout}

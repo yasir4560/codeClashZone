@@ -19,9 +19,21 @@ const frontendSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  ExpectedTimeInMinutes:{
+    type: Number,
+    default: 30,
+    required: true,
+  },
   ExpectedOutput:{
     type:String,
+  },
+  problemType: { 
+    type: String, 
+    enum: ['Code','Frontend'],
+    default: 'Frontend', 
+    required: true 
   }
+
 
 });
 

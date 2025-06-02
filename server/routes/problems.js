@@ -1,9 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { handleFrontendProblems } = require('../controllers/problems');
+const { handleFrontendProblems, getProblemById, handleSubmit, getUserSubmissions } = require('../controllers/problems');
 const authMiddleware = require('../middleware/authMiddleware');
 
-
 router.get('/frontend',authMiddleware,handleFrontendProblems);
+router.get("/:id",authMiddleware ,getProblemById);
+router.post('/submit/:problemId', authMiddleware, handleSubmit);
+router.post('/submissions',authMiddleware ,handleSubmit);
+router.get('/:userId/submissions', authMiddleware, getUserSubmissions);
 
 module.exports = router;
