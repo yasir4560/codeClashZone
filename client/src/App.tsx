@@ -9,6 +9,7 @@ import Loader from "./components/ui/Loader";
 import FrontendChallenges from "./pages/FrontendChallenges";
 import FrontendProblemPage from "./pages/FrontendProblemPage";
 import SubmissionsPage from "./pages/Submissions";
+import DsaChallenges from "./pages/DsaChallenges";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,6 +74,10 @@ function App() {
           element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" replace />}
         />
         <Route path="/frontend-challenges" element={<FrontendChallenges />} />
+        <Route
+          path="/dsa-challenges"
+          element={isLoggedIn ? <DsaChallenges /> : <Navigate to="/login" replace />}
+        />
         <Route path="/frontend/:id" element={<FrontendProblemPage />} />
         <Route
           path="/submissions"

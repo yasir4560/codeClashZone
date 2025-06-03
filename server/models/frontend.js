@@ -29,7 +29,7 @@ const frontendSchema = new mongoose.Schema({
   },
   problemType: { 
     type: String, 
-    enum: ['Code','Frontend'],
+    enum: ['DSA','Frontend'],
     default: 'Frontend', 
     required: true 
   }

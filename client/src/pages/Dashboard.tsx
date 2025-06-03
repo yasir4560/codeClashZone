@@ -29,11 +29,11 @@ export default function Dashboard() {
             💡 Frontend Challenges
           </button>
           <button
-            onClick={() => navigate("/code-challenges")}
+            onClick={() => navigate("/dsa-challenges")}
             className="bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-xl font-semibold transition cursor-pointer
 "
           >
-            ⚔️ Code Challenges
+            ⚔️ DSA Challenges
           </button>
         </div>
       </motion.div>

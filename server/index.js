@@ -3,8 +3,13 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/connection');
+
 const authRoute = require('./routes/user');
 const problemRoute = require('./routes/problems');
+const submissionRoute = require('./routes/submissions');
+const dsaProblemRoute = require('./routes/dsaProblems');
+
+
 const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -27,7 +32,9 @@ app.use(cookieParser())
 app.use('/api/auth',authRoute);
 app.use('/api/problems', problemRoute);
 app.use('/api/frontend', problemRoute);
-app.use('/api/', problemRoute);
-app.use('/api/users/', problemRoute);
+app.use('/api/', submissionRoute);
+app.use('/api/users/', submissionRoute);
+
+app.use('/api/dsa', dsaProblemRoute);
 
 server.listen(PORT,()=>console.log(`Server is running on port ${PORT}`));

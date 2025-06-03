@@ -14,7 +14,7 @@ const submissionSchema = new mongoose.Schema({
   problemType: {
     type: String,
     required: true,
-    enum: ['Frontend', 'Code'], 
+    enum: ['Frontend', 'DSA'], 
   },
   submittedAt: {
     type: Date,
