@@ -26,8 +26,9 @@ interface DsaProblem {
   examples?: Example[];
   testCases?: TestCase[];
   tags: string[];
-  timeLimit?: number; // in ms
-  spaceLimit?: number; // in MB or KB
+  solveTimeLimit?: number; 
+  timeLimit?: number; 
+  spaceLimit?: number; 
   acceptanceRate?: number | null;
   createdAt?: string;
 }
@@ -57,7 +58,6 @@ export default function DsaChallenges() {
       setProblems(res.data);
       setFiltered(res.data);
 
-      // Extract unique tags for filter dropdown
       const tagsSet = new Set<string>();
       res.data.forEach((p) => p.tags.forEach((t) => tagsSet.add(t)));
       setAllTags(Array.from(tagsSet).sort());
@@ -180,7 +180,7 @@ export default function DsaChallenges() {
                 <tr>
                   <th className="px-6 py-4">Problem</th>
                   <th className="px-6 py-4">Difficulty</th>
-                  <th className="px-6 py-4">Time Limit (ms)</th>
+                  <th className="px-6 py-4">Expected Time</th>
                   <th className="px-6 py-4">Acceptance Rate</th>
                   <th className="px-6 py-4">Tags</th>
                 </tr>
@@ -201,7 +201,7 @@ export default function DsaChallenges() {
                       {problem.difficulty}
                     </td>
                     <td className="px-6 py-4 text-gray-300">
-                      {problem.timeLimit ?? "—"}
+                      {problem.solveTimeLimit ?? "—"} mins
                     </td>
                     <td className="px-6 py-4 text-gray-300">
                       {problem.acceptanceRate != null ? `${problem.acceptanceRate}%` : "—"}

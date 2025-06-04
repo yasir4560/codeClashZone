@@ -10,6 +10,7 @@ import FrontendChallenges from "./pages/FrontendChallenges";
 import FrontendProblemPage from "./pages/FrontendProblemPage";
 import SubmissionsPage from "./pages/Submissions";
 import DsaChallenges from "./pages/DsaChallenges";
+import DsaProblemPage from "./pages/DsaProblemPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,6 +80,7 @@ function App() {
           element={isLoggedIn ? <DsaChallenges /> : <Navigate to="/login" replace />}
         />
         <Route path="/frontend/:id" element={<FrontendProblemPage />} />
+         <Route path="/dsa/:problemId" element={<DsaProblemPage />} />
         <Route
           path="/submissions"
           element={isLoggedIn ? <SubmissionsPage /> : <Navigate to="/login" replace />}

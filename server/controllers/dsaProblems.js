@@ -36,7 +36,26 @@ async function getDsaProblemById(req, res) {
   }
 }
 
+
+
+async function handleDsaProblemSubmission(req, res) {
+  
+}
+
+
+
+async function handleDsaRunCode(req, res) {
+  
+}
+
+
+
+
+
+
 module.exports = {
   getAllDsaProblems,
   getDsaProblemById,
+  handleDsaProblemSubmission,
+  handleDsaRunCode
 };

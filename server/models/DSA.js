@@ -37,6 +37,10 @@ const dsaSchema = new mongoose.Schema({
     type: Number, 
     default: 5000,
   },
+  solveTimeLimit: {
+    type: Number, 
+    default: 20,
+  },
   spaceLimit: {
     type: Number, 
     default: 1024,
