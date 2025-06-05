@@ -21,6 +21,7 @@ interface StarterCode {
   cpp: string;
   java: string;
   javascript: string;
+  [key: string]: string;
 }
 
 interface DsaProblem {
@@ -59,6 +60,7 @@ export default function DsaProblemPage() {
   const [testResult, setTestResult] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
 
+
   useEffect(() => {
     async function fetchProblem() {
       try {
@@ -67,7 +69,11 @@ export default function DsaProblemPage() {
           withCredentials: true,
         });
         setProblem(res.data);
-        setCode(res.data.starterCode[language]);
+        if (res.data.starterCode && res.data.starterCode[language]) {
+          setCode(res.data.starterCode[language]);
+        } else {
+          setCode("");
+        }
         if (res.data.solveTimeLimit) {
           setTimer(res.data.solveTimeLimit * 60);
         }
@@ -80,16 +86,39 @@ export default function DsaProblemPage() {
     fetchProblem();
   }, [problemId]);
 
-  // Timer countdown
+  useEffect(() => {
+    if (!problem) return;
+    const savedCode = localStorage.getItem(`code-${problem._id}-${language}`);
+    if (savedCode !== null) {
+      setCode(savedCode);
+    } else if (problem.starterCode && problem.starterCode[language]) {
+      setCode(problem.starterCode[language]);
+    } else {
+      setCode("");
+    }
+  }, [language, problem]);
+
+  useEffect(() => {
+    if (!problem) return;
+    localStorage.setItem(`code-${problem._id}-${language}`, code);
+  }, [code, language, problem]);
+
   useEffect(() => {
     if (!timerStarted || timer === 0) return;
-    if (timer > 0) {
-      timerRef.current = setTimeout(() => setTimer((prev) => prev - 1), 1000);
-    }
+
+    timerRef.current = setTimeout(() => setTimer((prev) => prev - 1), 1000);
+
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [timer, timerStarted]);
+
+  useEffect(() => {
+    if (timerStarted && timer === 0 && problem) {
+      handleSubmit();
+      setTimerStarted(false);
+    }
+  }, [timer]);
 
   useEffect(() => {
     if (problem) {
@@ -150,27 +179,44 @@ export default function DsaProblemPage() {
 
   const getDifficultyStyle = (level: string) => {
     switch (level) {
-      case "Easy": return "text-green-400";
-      case "Medium": return "text-yellow-400";
-      case "Hard": return "text-red-500";
-      default: return "text-gray-300";
+      case "Easy":
+        return "text-green-400";
+      case "Medium":
+        return "text-yellow-400";
+      case "Hard":
+        return "text-red-500";
+      default:
+        return "text-gray-300";
     }
   };
+
+  const CheckIcon = () => (
+    <svg className="inline w-5 h-5 text-green-400" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 13l4 4L19 7" />
+    </svg>
+  );
+
+  const CrossIcon = () => (
+    <svg className="inline w-5 h-5 text-red-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
 
   if (loading || !problem) return <Loader />;
 
   return (
     <div className="min-h-screen bg-black text-white grid grid-cols-1 md:grid-cols-2 gap-6 p-6 pt-20">
-      <div className="space-y-6 overflow-y-auto max-h-screen">
+      <div className="space-y-6 overflow-y-auto max-h-screen pr-2">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold text-purple-300">{problem.title}</h2>
           {problem.solveTimeLimit && !timerStarted && (
-            <button onClick={startTimer} className="bg-pink-600 px-4 py-2 rounded">
+            <button onClick={startTimer} className="bg-pink-600 px-4 py-2 rounded hover:bg-pink-700 transition">
               Start Challenge
             </button>
           )}
           {timerStarted && (
-            <div className="text-lg font-mono bg-gray-800 px-4 py-2 rounded">
+            <div className="text-lg font-mono bg-gray-800 px-4 py-2 rounded select-none">
               Timer: {formatTime(timer)}
             </div>
           )}
@@ -181,17 +227,31 @@ export default function DsaProblemPage() {
             {problem.difficulty}
           </span>
           <div className="space-x-2">
-            <button onClick={runCode} className="bg-green-600 px-4 py-2 rounded">
+            <button
+              onClick={runCode}
+              className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition"
+            >
               Run Code
             </button>
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="bg-purple-600 px-4 py-2 rounded disabled:opacity-50"
+              className="bg-purple-600 px-4 py-2 rounded disabled:opacity-50 hover:bg-purple-700 transition"
             >
               {submitting ? "Submitting..." : "Submit"}
             </button>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {problem.tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-gray-700 text-xs px-2 py-1 rounded select-none"
+              title={tag}
+            >
+              {tag}
+            </span>
+          ))}
         </div>
 
         <div>
@@ -203,10 +263,21 @@ export default function DsaProblemPage() {
           <div>
             <h4 className="font-semibold text-lg mb-2">Examples</h4>
             {problem.examples?.map((ex, i) => (
-              <div key={i} className="text-sm text-gray-300 border-l-4 border-purple-500 pl-4 mb-2">
-                <div><b>Input:</b> {ex.input}</div>
-                <div><b>Output:</b> {ex.output}</div>
-                {ex.explanation && <div><b>Explanation:</b> {ex.explanation}</div>}
+              <div
+                key={i}
+                className="text-sm text-gray-300 border-l-4 border-purple-500 pl-4 mb-2"
+              >
+                <div>
+                  <b>Input:</b> {ex.input}
+                </div>
+                <div>
+                  <b>Output:</b> {ex.output}
+                </div>
+                {ex.explanation && (
+                  <div>
+                    <b>Explanation:</b> {ex.explanation}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -216,9 +287,13 @@ export default function DsaProblemPage() {
           <div>
             <h4 className="font-semibold text-lg mb-2">Test Cases</h4>
             <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
-              {problem.testCases?.filter(tc => !tc.hidden).map((tc, i) => (
-                <li key={i}><b>Input:</b> {tc.input} <b>→</b> <b>Expected:</b> {tc.expectedOutput}</li>
-              ))}
+              {problem.testCases
+                ?.filter((tc) => !tc.hidden)
+                .map((tc, i) => (
+                  <li key={i}>
+                    <b>Input:</b> {tc.input} <b>→</b> <b>Expected:</b> {tc.expectedOutput}
+                  </li>
+                ))}
             </ul>
           </div>
         )}
@@ -228,10 +303,13 @@ export default function DsaProblemPage() {
         <select
           className="bg-gray-800 text-white px-4 py-2 rounded w-full"
           value={language}
+          disabled={timerStarted}
           onChange={(e) => setLanguage(e.target.value as Language)}
         >
           {languageOptions.map((lang) => (
-            <option key={lang.value} value={lang.value}>{lang.label}</option>
+            <option key={lang.value} value={lang.value}>
+              {lang.label}
+            </option>
           ))}
         </select>
 
@@ -252,20 +330,50 @@ export default function DsaProblemPage() {
             testResult.results ? (
               <ul className="space-y-1">
                 {testResult.results.map((res: any, i: number) => (
-                  <li key={i}>
-                    <b>Input:</b> {res.input} | <b>Output:</b> {res.actual} | <b>Expected:</b> {res.expected} | <b>Status:</b> {res.passed ? <span className="text-green-400">Passed</span> : <span className="text-red-500">Failed</span>}
+                  <li key={i} className="flex items-center space-x-2">
+                    {res.passed ? <CheckIcon /> : <CrossIcon />}
+                    <span>
+                      <b>Input:</b> {res.input} | <b>Output:</b> {res.actual} |{" "}
+                      <b>Expected:</b> {res.expected} | <b>Status:</b>{" "}
+                      <span
+                        className={
+                          res.passed ? "text-green-400 font-semibold" : "text-red-500 font-semibold"
+                        }
+                      >
+                        {res.passed ? "Passed" : "Failed"}
+                      </span>
+                    </span>
                   </li>
                 ))}
               </ul>
             ) : (
               <div>
-                <p><b>Output:</b> {testResult.output}</p>
-                <p><b>Expected:</b> {testResult.expected}</p>
-                <p><b>Status:</b> {testResult.isCorrect ? <span className="text-green-400">Passed</span> : <span className="text-red-500">Failed</span>}</p>
+                {testResult.isCorrect ? <CheckIcon /> : <CrossIcon />}
+                <p>
+                  <b>Output:</b> {testResult.output}
+                </p>
+                <p>
+                  <b>Expected:</b> {testResult.expected}
+                </p>
+                <p>
+                  <b>Status:</b>{" "}
+                  <span
+                    className={
+                      testResult.isCorrect ? "text-green-400 font-semibold" : "text-red-500 font-semibold"
+                    }
+                  >
+                    {testResult.isCorrect ? "Passed" : "Failed"}
+                  </span>
+                </p>
               </div>
             )
           ) : (
             <p className="text-gray-500">No submission yet</p>
+          )}
+          {testResult && (
+            <p className="mt-2 text-xs italic text-gray-400">
+              Note: Some hidden test cases were used during submission.
+            </p>
           )}
         </div>
       </div>

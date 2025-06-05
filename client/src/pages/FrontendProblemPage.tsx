@@ -34,7 +34,7 @@ export default function FrontendProblemPage() {
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Fetch problem
+  
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/frontend/${id}`, {
@@ -51,7 +51,7 @@ export default function FrontendProblemPage() {
       .catch((err) => console.error("Error fetching problem:", err));
   }, [id]);
 
-  // Timer logic
+  
   useEffect(() => {
     if (!isTimerRunning || timeLeft === null) return;
     if (timeLeft <= 0) {
@@ -64,7 +64,7 @@ export default function FrontendProblemPage() {
     return () => clearInterval(timer);
   }, [timeLeft, isTimerRunning]);
 
-  // Listen for console messages from iframe
+  
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === "console") {
@@ -98,7 +98,7 @@ export default function FrontendProblemPage() {
         timeTakenInSeconds: ((problem?.ExpectedTimeInMinutes ?? 0) * 60) - timeLeft!,
       },
       {
-        withCredentials: true, // ✅ this ensures your cookie (JWT) is sent
+        withCredentials: true,
       }
     );
 
@@ -118,7 +118,6 @@ export default function FrontendProblemPage() {
       ? `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, "0")}`
       : `${problem.ExpectedTimeInMinutes}:00`;
 
-  // Full HTML with console hook to post logs to parent window
   const fullCode = `
     <!DOCTYPE html>
     <html lang="en">
@@ -192,7 +191,7 @@ export default function FrontendProblemPage() {
           </p>
         </div>
 
-        {/* Editors + Preview + Console */}
+    {/* right */}
         <div className="col-span-9 flex flex-col space-y-4">
           <div className="grid grid-cols-3 gap-2 h-[250px]">
             <MonacoEditor
