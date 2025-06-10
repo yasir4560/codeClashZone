@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import MonacoEditor from "@monaco-editor/react";
 import Loader from "@/components/ui/Loader";
+import HintsAccordion from "@/components/HintsAccordion";
 
 interface Example {
   input?: string;
@@ -34,18 +35,15 @@ interface DsaProblem {
   tags: string[];
   solveTimeLimit?: number;
   starterCode: StarterCode;
+  hints?: string[];
 }
 
-type Language = "python" | "cpp" | "java" | "javascript" | "typescript" | "go" | "rust";
+type Language = "python" | "cpp" | "java" ;
 
 const languageOptions: { label: string; value: Language }[] = [
   { label: "Python", value: "python" },
   { label: "C++", value: "cpp" },
   { label: "Java", value: "java" },
-  { label: "JavaScript", value: "javascript" },
-  { label: "TypeScript", value: "typescript" },
-  { label: "Go", value: "go" },
-  { label: "Rust", value: "rust" },
 ];
 
 export default function DsaProblemPage() {
@@ -53,7 +51,7 @@ export default function DsaProblemPage() {
   const [problem, setProblem] = useState<DsaProblem | null>(null);
   const [loading, setLoading] = useState(true);
   const [code, setCode] = useState<string>("");
-  const [language, setLanguage] = useState<Language>("python");
+  const [language, setLanguage] = useState<Language>("java");
   const [timer, setTimer] = useState<number>(0);
   const [timerStarted, setTimerStarted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -153,23 +151,31 @@ export default function DsaProblemPage() {
   };
 
   const handleSubmit = async () => {
-    if (!problem) return;
-    setSubmitting(true);
-    setTestResult(null);
-    try {
-      const res = await axios.post(
-        `http://localhost:8000/api/dsa/${problem._id}/submit`,
-        { code, language },
-        { withCredentials: true }
-      );
-      setTestResult(res.data);
-    } catch (err) {
-      console.error(err);
-      alert("Submission failed");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  if (!problem) return;
+  
+  if (timerRef.current) {
+    clearTimeout(timerRef.current);
+  }
+  setTimerStarted(false);
+
+  setSubmitting(true);
+  setTestResult(null);
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/dsa/${problem._id}/submit`,
+      { code, language, timeTakenInSeconds: (problem.solveTimeLimit! * 60) - timer },
+      { withCredentials: true }
+    );
+    setTestResult(res.data);
+  } catch (err) {
+    console.error(err);
+    alert("Submission failed");
+  } finally {
+    setSubmitting(false);
+    alert("Submission successful!");
+  }
+};
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -282,8 +288,13 @@ export default function DsaProblemPage() {
             ))}
           </div>
         )}
+        {/* ...after examples or description */}
+{problem.hints && problem.hints.length > 0 && (
+  <HintsAccordion hints={problem.hints} />
+)}
 
-        {(problem.testCases?.length ?? 0) > 0 && (
+
+        {/* {(problem.testCases?.length ?? 0) > 0 && (
           <div>
             <h4 className="font-semibold text-lg mb-2">Test Cases</h4>
             <ul className="list-disc list-inside text-sm text-gray-300 space-y-1">
@@ -296,7 +307,7 @@ export default function DsaProblemPage() {
                 ))}
             </ul>
           </div>
-        )}
+        )} */}
       </div>
 
       <div className="flex flex-col space-y-4 h-full">

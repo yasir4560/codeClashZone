@@ -1,4 +1,5 @@
 const DSAModel = require('../models/DSA');
+const Submission = require('../models/submission');  
 const axios = require('axios');
 
 async function getAllDsaProblems(req, res) {
@@ -12,10 +13,10 @@ async function getAllDsaProblems(req, res) {
       filter.tags = { $in: tagsArray };
     }
 
-    console.log('Using filter:', filter);
+    // console.log('Using filter:', filter);
 
     const problems = await DSAModel.find(filter);
-    console.log('Found problems:', problems.length);
+    // console.log('Found problems:', problems.length);
 
     res.status(200).json(problems);
   } catch (error) {
@@ -39,18 +40,23 @@ async function getDsaProblemById(req, res) {
 
 
 const languagesMap = {
-  python: 'python3',
-  cpp: 'cpp',
-  java: 'java',
-  javascript: 'javascript',
-  typescript: 'typescript',
-  go: 'go',
-  rust: 'rust',
+  python: "python3",
+  cpp: "cpp",
+  java: "java"
 };
+
+function getFileExtension(lang) {
+  switch (lang) {
+    case "python3": return "py";
+    case "cpp": return "cpp";
+    case "java": return "java";
+    default: return "txt";
+  }
+}
 
 async function executePiston(language, source, input) {
   try {
-    const pistonLang = languagesMap[language];
+    const pistonLang = languagesMap[language.toLowerCase()];
     if (!pistonLang) {
       throw new Error(`Unsupported language: ${language}`);
     }
@@ -64,8 +70,9 @@ async function executePiston(language, source, input) {
           content: source,
         },
       ],
-      stdin: input,
+      stdin: input,  
     };
+
     console.log("Piston payload:", JSON.stringify(payload, null, 2));
 
     const response = await axios.post('https://emkc.org/api/v2/piston/execute', payload, {
@@ -80,73 +87,110 @@ async function executePiston(language, source, input) {
   }
 }
 
-function getFileExtension(language) {
-  switch(language) {
-    case 'python3': return 'py';
-    case 'cpp': return 'cpp';
-    case 'java': return 'java';
-    case 'javascript': return 'js';
-    case 'typescript': return 'ts';
-    case 'go': return 'go';
-    case 'rust': return 'rs';
-    default: return 'txt';
+function convertInput(input) {
+  if (typeof input === 'object') {
+    return JSON.stringify(input);
   }
+  else if (typeof input === 'string') {
+    return input;
+  }
+  else if (typeof input === 'number') {
+    return input.toString();
+  }
+  else if (Array.isArray(input)) {
+    return input.join('\n');
+  }
+  else {
+    return String(input);
+  }
+
 }
 
 
 
-
-function convertInput(descriptiveInput) {
-  const lines = descriptiveInput.split('\n');
-  let nums = [];
-  let target = null;
-  
-  for (const line of lines) {
-    if (line.startsWith('nums =')) {
-      const match = line.match(/\[(.*)\]/);
-      if (match && match[1]) {
-        nums = match[1].split(',').map(s => s.trim());
-      }
-    } else if (line.startsWith('target =')) {
-      const parts = line.split('=');
-      if (parts.length === 2) {
-        target = parts[1].trim();
-      }
-    }
-  }
-  
-  if (nums.length === 0 || target === null) {
-    throw new Error('Invalid input format');
-  }
-  return `${nums.length}\n${nums.join(' ')}\n${target}`;
+function normalizeOutput(str) {
+  // Remove all whitespace
+  return str.replace(/\s+/g, '');
 }
-
-
 
 async function handleDsaProblemSubmission(req, res) {
-  
-}
-
-
-
-async function handleDsaRunCode(req, res) {
-try {
-    const { code, language } = req.body;
+  try {
+    const userId = req.user._id;
     const problemId = req.params.id;
-    if (!code || !language || !problemId)
-      return res.status(400).json({ message: "Code, language, and problemId are required" });
-
+    const { code, language, timeTakenInSeconds } = req.body;
+    if (!problemId || !code || !language) {
+      return res.status(400).json({ message: "Problem ID, code, and language are required" });
+    }
     const problem = await DSAModel.findById(problemId);
     if (!problem) return res.status(404).json({ message: "Problem not found" });
-    const visibleTestCases = (problem.testCases || []).filter((tc) => !tc.hidden);
-
+    const allTestCases = problem.testCases || [];
     const results = [];
-    for (const testCase of visibleTestCases) {
-      const runResult = await executePiston(language, code, convertInput(testCase.input));
+
+    for (const testCase of allTestCases) {
+      const inputStr = convertInput(testCase.input);
+      const runResult = await executePiston(language, code, inputStr);
       const output = (runResult.stdout || "").trim();
       const errorOutput = (runResult.stderr || "").trim();
 
-      const passed = !errorOutput && output === testCase.expectedOutput.trim();
+      const passed = !errorOutput && 
+        normalizeOutput(output) === normalizeOutput(testCase.expectedOutput.trim());
+
+      results.push({
+        input: testCase.input,
+        expected: testCase.expectedOutput.trim(),
+        actual: output,
+        error: errorOutput || null,
+        passed,
+        hidden: testCase.hidden || false,
+      });
+    }
+    const isSuccess = results.every(result => result.passed);
+    const newSubmission = {
+      userId,
+      problemId,
+      code,
+      language,
+      results,
+      isSuccess,
+      problemType: problem.problemType,
+      timeTakenInSeconds: timeTakenInSeconds || 0,
+    };
+    const submission = new Submission(newSubmission);
+    await submission.save();
+    res.status(201).json({
+      message: "Submission submitted successfully",
+      submission: newSubmission,
+      results,
+    });
+  } catch (error) {
+    console.error("Error in handleDsaProblemSubmission:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function handleDsaRunCode(req, res) {
+  try {
+    const { code, language } = req.body;
+    const problemId = req.params.id;
+
+    if (!code || !language || !problemId) {
+      return res.status(400).json({ message: "Code, language, and problemId are required" });
+    }
+
+    const problem = await DSAModel.findById(problemId);
+    if (!problem) return res.status(404).json({ message: "Problem not found" });
+
+    const visibleTestCases = (problem.testCases || []).filter(tc => !tc.hidden);
+
+    const results = [];
+    for (const testCase of visibleTestCases) {
+      const inputStr = convertInput(testCase.input);
+      const runResult = await executePiston(language, code, inputStr);
+      const output = (runResult.stdout || "").trim();
+      const errorOutput = (runResult.stderr || "").trim();
+
+      const passed = !errorOutput &&
+        normalizeOutput(output) === normalizeOutput(testCase.expectedOutput.trim());
 
       results.push({
         input: testCase.input,
@@ -163,6 +207,7 @@ try {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
 
 module.exports = {
   getAllDsaProblems,

@@ -11,8 +11,7 @@ import FrontendProblemPage from "./pages/FrontendProblemPage";
 import SubmissionsPage from "./pages/Submissions";
 import DsaChallenges from "./pages/DsaChallenges";
 import DsaProblemPage from "./pages/DsaProblemPage";
-import PlayWithFriends from "./pages/PlayWithFriends";
-import MultiplayerRoom from "./pages/MultiplayerRoom";
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -84,8 +83,6 @@ function App() {
         <Route path="/frontend/:id" element={<FrontendProblemPage />} />
          <Route path="/dsa/:problemId" element={<DsaProblemPage />} />
         <Route path="/submissions" element={isLoggedIn ? <SubmissionsPage /> : <Navigate to="/login" replace />}/>
-        <Route path="/rooms" element={isLoggedIn ? <PlayWithFriends /> : <Navigate to="/login" replace />}/>
-        <Route path ="/rooms/:roomId" element={isLoggedIn ? <MultiplayerRoom /> : <Navigate to="/login" replace />} />
       </Routes>
     </>
   );

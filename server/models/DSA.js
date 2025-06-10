@@ -1,10 +1,23 @@
 const mongoose = require('mongoose');
 
+const exampleSchema = new mongoose.Schema({
+  input: { type: String, required: true },
+  output: { type: String, required: true },
+  explanation: { type: String, default: '' },
+}, { _id: false });
+
+const testCaseSchema = new mongoose.Schema({
+  input: { type: String, required: true },
+  expectedOutput: { type: String, required: true },
+  hidden: { type: Boolean, default: false }
+}, { _id: false });
+
 const dsaSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   description: {
     type: String,
@@ -16,44 +29,41 @@ const dsaSchema = new mongoose.Schema({
     default: 'Easy',
   },
   constraints: {
-    type: String,
+    type: [String], 
+    default: []
   },
-  examples: [
-    {
-      input: { type: String },
-      output: { type: String },
-      explanation: { type: String },
-    }
-  ],
-  testCases: [
-    {
-      input: { type: String, required: true },
-      expectedOutput: { type: String, required: true },
-      hidden: { type: Boolean, default: false } 
-    }
-  ],
-  tags: [String], 
+  examples: [exampleSchema],
+  testCases: [testCaseSchema],
+  tags: {
+    type: [String],
+    index: true,
+    default: []
+  },
   timeLimit: {
-    type: Number, 
+    type: Number,
     default: 5000,
   },
   solveTimeLimit: {
-    type: Number, 
+    type: Number,
     default: 20,
   },
   spaceLimit: {
-    type: Number, 
+    type: Number,
     default: 1024,
   },
   starterCode: {
-    type: Map, // Map allows flexible key-value structure
+    type: Map,
     of: String,
-    default: {},
+    default: {}
   },
-  problemType: { 
-    type: String, 
-    default: 'DSA', 
-    required: true 
+  hints:{
+    type: [String],
+    default: []
+  },
+  problemType: {
+    type: String,
+    default: 'DSA',
+    required: true
   },
   acceptanceRate: {
     type: Number,
@@ -64,9 +74,13 @@ const dsaSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    index: true
   }
 });
 
-const DSAModel = mongoose.model('DSAProblem', dsaSchema, 'dsaProblems');
 
+dsaSchema.index({ difficulty: 1 });
+dsaSchema.index({ createdAt: -1 });
+
+const DSAModel = mongoose.model('DSA', dsaSchema, 'dsaProblems');
 module.exports = DSAModel;
