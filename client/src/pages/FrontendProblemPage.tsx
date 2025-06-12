@@ -6,6 +6,7 @@ import Loader from "@/components/ui/Loader";
 import SubmissionModal from "@/components/ui/SubmissionModal";
 
 interface Problem {
+  testScript: string;
   _id: string;
   title: string;
   description: string;
@@ -27,14 +28,14 @@ export default function FrontendProblemPage() {
   const [jsCode, setJsCode] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-
-  const [consoleLogs, setConsoleLogs] = useState<
-    { type: string; args: any[] }[]
-  >([]);
+  const [consoleLogs, setConsoleLogs] = useState<{ type: string; args: any[] }[]>(
+    []
+  );
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/frontend/${id}`, {
@@ -51,11 +52,10 @@ export default function FrontendProblemPage() {
       .catch((err) => console.error("Error fetching problem:", err));
   }, [id]);
 
-  
   useEffect(() => {
     if (!isTimerRunning || timeLeft === null) return;
     if (timeLeft <= 0) {
-      handleSubmit("auto");
+      submitSolution(false, "auto");
       return;
     }
     const timer = setInterval(() => {
@@ -72,11 +72,25 @@ export default function FrontendProblemPage() {
           ...logs,
           { type: event.data.logType, args: event.data.args },
         ]);
+      } else if (event.data?.type === "test-result") {
+        const passed = event.data.passed;
+        if (passed) {
+          if (isSubmitting) {
+            alert("✅ Test passed! Submitting...");
+            submitSolution(true, "manual");
+          } else {
+            alert("✅ Test passed!");
+          }
+        } else {
+          alert("❌ Test failed. Fix your code and try again.");
+          setIsSubmitting(false); 
+        }
       }
     };
+
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [isSubmitting, htmlCode, cssCode, jsCode, timeLeft, problem]);
 
   const startTimer = () => {
     if (problem) {
@@ -85,31 +99,45 @@ export default function FrontendProblemPage() {
     }
   };
 
- const handleSubmit = async (type: "manual" | "auto") => {
-  try {
-    await axios.post(
-      `http://localhost:8000/api/submit/${problem?._id}`,
-      {
-        problemType: "Frontend",
-        codeHtml: htmlCode,
-        codeCss: cssCode,
-        codeJs: jsCode,
-        isSuccess: true,
-        timeTakenInSeconds: ((problem?.ExpectedTimeInMinutes ?? 0) * 60) - timeLeft!,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+  const runTests = () => {
+    iframeRef.current?.contentWindow?.postMessage({ type: "run-tests" }, "*");
+  };
 
-    setIsTimerRunning(false);
-    setShowModal(true); 
-  } catch (error) {
-    console.error("Submission error:", error);
-  }
-};
+  const submitSolution = async (
+    isSuccess: boolean,
+    type: "manual" | "auto"
+  ) => {
+    if (!problem) return;
+    try {
+      await axios.post(
+        `http://localhost:8000/api/submit/${problem._id}`,
+        {
+          problemType: "Frontend",
+          codeHtml: htmlCode,
+          codeCss: cssCode,
+          codeJs: jsCode,
+          isSuccess,
+          timeTakenInSeconds:
+            ((problem.ExpectedTimeInMinutes ?? 0) * 60 - (timeLeft ?? 0)),
+          submissionType: type,
+        },
+        { withCredentials: true }
+      );
+      setIsTimerRunning(false);
+      setShowModal(true);
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-
+  
+  const onSubmitClick = () => {
+    setConsoleLogs([]);
+    setIsSubmitting(true);
+    runTests();
+  };
 
   if (!problem) return <Loader />;
 
@@ -126,7 +154,7 @@ export default function FrontendProblemPage() {
       <title>Live Preview</title>
       <style>
         body {
-          background-color: #f9fafb; /* light background */
+          background-color: #f9fafb;
           color: #222;
           font-family: Arial, sans-serif;
           padding: 10px;
@@ -139,7 +167,6 @@ export default function FrontendProblemPage() {
       ${htmlCode}
       <script>
         (function() {
-          // Override console methods to forward logs to parent
           ['log', 'error', 'warn', 'info'].forEach(fn => {
             const original = console[fn];
             console[fn] = function(...args) {
@@ -156,6 +183,9 @@ export default function FrontendProblemPage() {
           console.error(e);
         }
       </script>
+      <script>
+        ${problem.testScript || ""}
+      </script>
     </body>
     </html>
   `;
@@ -170,9 +200,10 @@ export default function FrontendProblemPage() {
             <button
               onClick={startTimer}
               className="text-sm bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded"
+              disabled={isTimerRunning}
+              title={isTimerRunning ? "Timer running" : "Start Timer"}
             >
               ⏱ {formattedTime}
-              {!isTimerRunning && <span className="ml-1 text-xs">(Start)</span>}
             </button>
           </div>
           <div className="flex justify-between items-center">
@@ -180,8 +211,9 @@ export default function FrontendProblemPage() {
               {problem.difficulty}
             </span>
             <button
-              onClick={() => handleSubmit("manual")}
+              onClick={onSubmitClick}
               className="text-xs bg-green-600 hover:bg-green-500 px-3 py-1 rounded"
+              disabled={isSubmitting}
             >
               Submit
             </button>
@@ -191,7 +223,7 @@ export default function FrontendProblemPage() {
           </p>
         </div>
 
-    {/* right */}
+        {/* Right */}
         <div className="col-span-9 flex flex-col space-y-4">
           <div className="grid grid-cols-3 gap-2 h-[250px]">
             <MonacoEditor
@@ -243,8 +275,6 @@ export default function FrontendProblemPage() {
         </div>
       </div>
       {showModal && <SubmissionModal onClose={() => setShowModal(false)} />}
-
-
     </div>
   );
 }

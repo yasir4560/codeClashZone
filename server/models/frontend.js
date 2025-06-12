@@ -32,9 +32,11 @@ const frontendSchema = new mongoose.Schema({
     enum: ['DSA','Frontend'],
     default: 'Frontend', 
     required: true 
+  },
+  testScript:{
+    type: String,
+    required: true,
   }
-
-
 });
 
 

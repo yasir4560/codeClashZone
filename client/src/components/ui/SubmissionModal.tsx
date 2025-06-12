@@ -9,12 +9,12 @@ export default function SubmissionModal({ onClose }: SubmissionModalProps) {
 
   const goToProblems = () => {
     onClose();
-    navigate("/frontend-problems"); // You can change this route if needed
+    navigate("/frontend-challenges"); 
   };
 
   const goToSubmissions = () => {
     onClose();
-    navigate("/submissions"); // Or "/my-submissions" based on your routing
+    navigate("/submissions"); 
   };
 
   return (
