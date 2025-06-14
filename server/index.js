@@ -9,6 +9,9 @@ const problemRoute = require('./routes/problems');
 const submissionRoute = require('./routes/submissions');
 const dsaProblemRoute = require('./routes/dsaProblems');
 
+const { Server } = require('socket.io');
+const setupSocket = require('./socket');
+
 
 const cookieParser = require('cookie-parser');
 
@@ -38,6 +41,21 @@ app.use('/api/users/', submissionRoute);
 app.use('/api/dsa', dsaProblemRoute);
 
 
+//socket setup
+const server = http.createServer(app);
+const io = new Server(server, {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
+
+setupSocket(io);
+
+
+
+
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server and socket is running on port ${PORT}`));
