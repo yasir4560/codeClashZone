@@ -109,7 +109,7 @@ const { roomId, userId, username } = socket.data;
           delete roomUsers[roomId];
         }
 
-        console.log("❌ Disconnected:", socket.id);
+        console.log("❌ Disconnect:", socket.id);
       }
     });
   });

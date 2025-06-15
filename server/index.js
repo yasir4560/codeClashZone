@@ -58,4 +58,4 @@ setupSocket(io);
 
 
 const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => console.log(`Server and socket is running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server and socket is run on port ${PORT}`));
