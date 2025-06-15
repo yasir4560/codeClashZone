@@ -45,6 +45,9 @@ module.exports = function setupSocket(io) {
       }));
 
       io.to(roomId).emit('room-users', userList);
+    
+      // io.to(roomId).emit("user-joined", username);
+
 
       // Broadcast join message
       console.log("users", roomUsers);
