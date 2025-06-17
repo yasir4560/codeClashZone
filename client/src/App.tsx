@@ -13,12 +13,13 @@ import DsaChallenges from "./pages/DsaChallenges";
 import DsaProblemPage from "./pages/DsaProblemPage";
 import PlayWithFriends from "./pages/PlayWithFriends";
 import Room from "./pages/Room";
+import { Toaster } from "react-hot-toast";
 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  const [user, setUser] = useState<{userId:string, name: string}|null>(null);
+  const [user, setUser] = useState<{userId:string, name: string, email:string}|null>(null);
 
   
   useEffect(() => {
@@ -31,7 +32,7 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           setIsLoggedIn(true);
-          setUser({ userId: data.userId, name: data.name });
+          setUser({ userId: data.userId, name: data.name, email: data.email });
         } else {
           setIsLoggedIn(false);
           setUser(null);
@@ -72,7 +73,9 @@ function App() {
 
   return (
     <>
-      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+     <Toaster position="top-right" reverseOrder={false} />
+     
+      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} user={user ?? undefined} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
