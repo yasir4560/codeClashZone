@@ -1,18 +1,19 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface JoinRoomModalProps {
-  problem: { _id: string;title: string;difficulty: string }; 
-  user:{userId: string; name: string};
+  problem: { _id: string; title: string; difficulty: string };
+  user: { userId: string; name: string };
   onClose: () => void;
 }
 
-export default function JoinRoomModal({ problem,user ,onClose }: JoinRoomModalProps) {
-  const [roomId, setRoomId] = useState('');
+export default function JoinRoomModal({ problem, user, onClose }: JoinRoomModalProps) {
+  const roomIdRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const username = user.name || '';
 
   const handleJoin = () => {
+    const roomId = roomIdRef.current?.value.trim();
     if (roomId && username) {
       navigate(`/room/${roomId}?problem=${problem._id}&username=${encodeURIComponent(username)}&userId=${user.userId}`);
     }
@@ -23,10 +24,9 @@ export default function JoinRoomModal({ problem,user ,onClose }: JoinRoomModalPr
       <div className="bg-white p-6 rounded shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4 text-black text-center">Join Room</h2>
         <input
+          ref={roomIdRef}
           className="w-full mb-3 p-2 border rounded text-gray-700"
           placeholder="Enter Room ID"
-          value={roomId}
-          onChange={e => setRoomId(e.target.value)}
         />
         <input
           className="w-full mb-4 p-2 border rounded text-gray-700"

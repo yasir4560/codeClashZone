@@ -123,7 +123,7 @@ export default function Signup() {
 
               <button
                 type="submit"
-                className="w-full py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                className="w-full py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition hover:cursor-pointer"
               >
                 Sign Up
               </button>

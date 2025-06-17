@@ -13,8 +13,7 @@ router.get('/me', handleCheckAuth, (req, res) => {
   if (!req.user) {
     return res.status(401).json({ error: 'Unauthorized: no user found' });
   }
-  res.status(200).json({userId: req.user.id,name: req.user.name,
-  });
+  res.status(200).json({userId: req.user.id,name: req.user.name, email: req.user.email});
 });
 
 
