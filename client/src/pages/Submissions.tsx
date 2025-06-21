@@ -34,12 +34,14 @@ export default function SubmissionsPage() {
         const res = await axios.get("http://localhost:8000/api/auth/me", {
           withCredentials: true,
         });
-        const userId = res.data.user.id;
+       
+        const userId = res?.data?.userId;
 
         const submissionRes = await axios.get(
           `http://localhost:8000/api/users/${userId}/submissions`,
           { withCredentials: true }
         );
+       
         setSubmissions(submissionRes.data);
       } catch (error) {
         console.error("Error fetching submissions:", error);

@@ -45,7 +45,7 @@ export default function Navbar({ isLoggedIn, user, onLogout }: NavbarProps) {
 
   return (
     <nav className="w-full flex items-center justify-between px-6 py-4 bg-gradient-to-r from-purple-700 via-indigo-800 to-blue-900 shadow-lg fixed top-0 left-0 z-50">
-      <Link to="/" className="text-3xl font-extrabold text-white hover:text-purple-300 transition">
+      <Link to="/dashboard" className="text-3xl font-extrabold text-white hover:text-purple-300 transition">
         CodeClashZone
       </Link>
 
