@@ -50,6 +50,14 @@ export default function Room() {
   const [timer, setTimer] = useState<number>(0);
   const [timerStarted, setTimerStarted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const chatBoxRef = useRef<HTMLDivElement | null>(null);
+
+
+  useEffect(() => {
+  if (chatBoxRef.current) {
+    chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+  }
+}, [messages]);
 
   useEffect(() => {
     if (!problemId) return;
@@ -208,13 +216,14 @@ return (
     {/* right*/}
     <div className="col-span-1 flex flex-col space-y-4">
       <button className="bg-[#33186B] px-4 py-2 rounded hover:bg-[#150050] cursor-pointer">Leaderboard</button>
-      <div className="bg-gray-900 p-4 rounded h-[60%] overflow-y-auto flex flex-col-reverse">
-        {messages.map((msg, idx) => (
-          <div key={idx} className="mb-2 text-sm text-gray-300">
-            <strong className="text-blue-400">{msg.username}</strong>: {msg.message}
-          </div>
-        ))}
-      </div>
+      <div className="bg-gray-900 p-4 rounded h-[50%] overflow-y-auto flex flex-col-reverse" ref={chatBoxRef}>
+        {[...messages].reverse().map((msg, idx) => (<div key={idx} className="mb-2 text-sm text-gray-300">
+        <strong className="text-blue-400">{msg.username}</strong>: {msg.message}
+    </div>
+  ))}
+</div>
+
+
       <div className="flex">
         <input
           type="text"

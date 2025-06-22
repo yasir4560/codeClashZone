@@ -14,6 +14,7 @@ import DsaProblemPage from "./pages/DsaProblemPage";
 import PlayWithFriends from "./pages/PlayWithFriends";
 import Room from "./pages/Room";
 import { Toaster } from "react-hot-toast";
+import CommunityPage from "./pages/CommunityPage";
 
 
 function App() {
@@ -47,8 +48,9 @@ function App() {
   }, []);
 
   // Called after successful login (e.g. in Login page)
-  const handleLogin = () => {
+  const handleLogin = (userData:{userId:string; name:string; email:string}) => {
     setIsLoggedIn(true);
+    setUser(userData);
   };
 
   const handleLogout = async () => {
@@ -75,7 +77,7 @@ function App() {
     <>
      <Toaster position="top-right" reverseOrder={false} />
      
-      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} user={user ?? undefined} />
+     {!checkingAuth && isLoggedIn && user && (<Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} user={user ?? undefined} />)}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -95,7 +97,7 @@ function App() {
 
         <Route path="/submissions" element={isLoggedIn ? <SubmissionsPage /> : <Navigate to="/login" replace />}/>
 
-        {/* multi plauer routes */}
+        {/* multi player routes */}
         <Route
           path="/play"
           element={
@@ -105,6 +107,10 @@ function App() {
           }
         />
         <Route path="/room/:roomId" element={isLoggedIn ? <Room /> : <Navigate to="/login" replace />} />
+
+
+        {/* community */}
+        <Route path="/community" element={isLoggedIn ? <CommunityPage/> : <Navigate to="/login" replace />} />
       </Routes>
     </>
   );

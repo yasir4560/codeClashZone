@@ -39,7 +39,7 @@ export default function Navbar({ isLoggedIn, user, onLogout }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const initial = user?.name?.[0]?.toUpperCase() || "?";
+  const initial = user?.name?.[0]?.toUpperCase();
   // console.log("User:", user);
   // console.log(user?.email)
 
@@ -62,7 +62,7 @@ export default function Navbar({ isLoggedIn, user, onLogout }: NavbarProps) {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="w-10 h-10 rounded-full bg-white text-indigo-800 font-bold flex items-center justify-center hover:opacity-90 cursor-pointer"
               >
-                {initial}
+                {initial ||""}
               </button>
 
               {dropdownOpen && (
