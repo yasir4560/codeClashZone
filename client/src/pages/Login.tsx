@@ -5,7 +5,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import Loader from "@/components/ui/Loader";
 
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (userData: { userId: string; name: string; email: string }) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -32,14 +32,25 @@ export default function Login({ onLogin }: LoginProps) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-      await delay(2000)
+      const loginData = await res.json();
+      await delay(2000); 
 
       if (!res.ok) {
-        setError(data.message || "Login failed");
+        setError(loginData.message || "Login failed");
       } else {
-        localStorage.setItem("token", data.token); 
-        onLogin();
+        //  refresh logic
+        const meRes = await fetch("http://localhost:8000/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!meRes.ok) {
+          setError("Could not fetch user data after login.");
+          return;
+        }
+
+        const userData = await meRes.json();
+        onLogin({ userId: userData.userId, name: userData.name, email: userData.email });
         navigate("/dashboard");
       }
     } catch (err) {
@@ -60,7 +71,7 @@ export default function Login({ onLogin }: LoginProps) {
         </div>
       )}
 
-      {/* Login Form (hidden during loading) */}
+      {/* Login Form */}
       {!loading && (
         <motion.div
           className="absolute inset-0 flex items-center justify-center px-4"
