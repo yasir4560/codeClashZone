@@ -9,6 +9,8 @@ const problemRoute = require('./routes/problems');
 const submissionRoute = require('./routes/submissions');
 const dsaProblemRoute = require('./routes/dsaProblems');
 const communityRoutes = require('./routes/communityRoutes');
+const leaderboardRoutes = require('./routes/leaderboardRoutes');
+
 
 const { Server } = require('socket.io');
 const setupSocket = require('./socket');
@@ -41,6 +43,7 @@ app.use('/api/', submissionRoute);
 app.use('/api/users/', submissionRoute);
 app.use('/api/dsa', dsaProblemRoute);
 app.use('/api/community',communityRoutes);
+ app.use('/api/leaderboard', leaderboardRoutes);
 
 
 //socket setup

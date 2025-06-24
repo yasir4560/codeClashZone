@@ -99,7 +99,9 @@ export default function CommunityPage() {
     }
 
     fetchDoubtsWithCommentCounts();
-  }, []);
+  }, [doubts, comments]);
+
+  // console.log("expanded", expandedDoubtId);
 
   const filteredDoubts = doubts.filter((d) => {
     if (filterTag !== "all") {
@@ -125,6 +127,7 @@ export default function CommunityPage() {
     }
     return true;
   });
+
 
   useEffect(() => {
     if (!expandedDoubtId) {
@@ -192,8 +195,11 @@ export default function CommunityPage() {
         setComments((prev) => [data, ...prev]);
         setCommentText("");
         setDoubts((prev) =>
-          prev.map((d) => (d._id === expandedDoubtId ? { ...d, commentCount: d.commentCount + 1 } : d))
+          prev.map((d) => (d?._id === expandedDoubtId ? { ...d, commentCount: d?.commentCount + 1 } : d))
         );
+       // console.log("expanded", expandedDoubtId);
+        setExpandedDoubtId("");
+        
       } else {
         alert(data.message || "Failed to add comment");
       }
@@ -259,32 +265,32 @@ export default function CommunityPage() {
               )}
 
               {filteredDoubts.map((doubt) => {
-                const isExpanded = doubt._id === expandedDoubtId;
+                const isExpanded = doubt?._id === expandedDoubtId;
 
                 const tags = [];
                 const threeDaysAgo = new Date();
                 threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-                if (new Date(doubt.createdAt) >= threeDaysAgo) tags.push("new");
+                if (new Date(doubt?.createdAt) >= threeDaysAgo) tags.push("new");
                 if (
-                  doubt.title.toLowerCase().includes("resolved") ||
-                  doubt.description.toLowerCase().includes("resolved")
+                  doubt?.title?.toLowerCase().includes("resolved") ||
+                  doubt?.description?.toLowerCase().includes("resolved")
                 )
                   tags.push("resolved");
 
                 return (
                   <motion.div
-                    key={doubt._id}
+                    key={doubt?._id}
                     layout
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.3 }}
                     className="bg-gray-800 rounded-xl p-5 cursor-pointer shadow-lg hover:shadow-purple-700/50 border border-purple-700"
-                    onClick={() => toggleExpand(doubt._id)}
+                    onClick={() => toggleExpand(doubt?._id)}
                   >
                     <div className="flex justify-between items-center">
                       <h3 className="text-xl font-bold flex items-center space-x-3">
-                        <span>{doubt.title}</span>
+                        <span>{doubt?.title}</span>
                         {tags.map((tag) => (
                           <span
                             key={tag}
@@ -306,11 +312,11 @@ export default function CommunityPage() {
                     {!isExpanded && (
                       <div className="mt-2 text-purple-300">
                         <p className="truncate">
-                          {doubt.createdBy.name}: {doubt.description}
+                          {doubt?.createdBy?.name}: {doubt?.description}
                         </p>
-                        {doubt.imageUrl && (
+                        {doubt?.imageUrl && (
                           <img
-                            src={doubt.imageUrl}
+                            src={doubt?.imageUrl}
                             alt="Doubt"
                             className="mt-2 max-h-64 rounded-lg border border-purple-600"
                           />
@@ -319,8 +325,8 @@ export default function CommunityPage() {
                     )}
 
                     <div className="flex justify-between items-center mt-2 text-sm text-purple-400">
-                      <p>💬 {doubt.commentCount}</p>
-                      <p>{formatTimeAgo(doubt.createdAt)}</p>
+                      <p>💬 {doubt?.commentCount}</p>
+                      <p>{formatTimeAgo(doubt?.createdAt)}</p>
                     </div>
 
                     <AnimatePresence>
@@ -334,25 +340,25 @@ export default function CommunityPage() {
                           className="mt-4 pt-4 border-t border-purple-700"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <p className="mb-4 whitespace-pre-wrap text-purple-100">{doubt.description}</p>
+                          <p className="mb-4 whitespace-pre-wrap text-purple-100">{doubt?.description}</p>
 
                           <h4 className="font-semibold mb-2 text-purple-300">Comments</h4>
 
                           {loadingComments ? (
                             <p className="text-purple-500">Loading comments...</p>
-                          ) : comments.length === 0 ? (
+                          ) : comments?.length === 0 ? (
                             <p className="text-purple-500">No comments yet.</p>
                           ) : (
                             <div className="space-y-3 max-h-48 overflow-y-auto mb-4">
-                              {comments.map((comment) => (
+                              {comments?.map((comment) => (
                                 <div
-                                  key={comment._id}
+                                  key={comment?._id}
                                   className="bg-gray-700 p-3 rounded-lg text-purple-200"
                                 >
-                                  <p>{comment.text}</p>
+                                  <p>{comment?.text}</p>
                                   <small className="text-purple-400">
-                                    — {comment.createdBy.name},{" "}
-                                    {new Date(comment.createdAt).toLocaleString()}
+                                    — {comment?.createdBy?.name},{" "}
+                                    {new Date(comment?.createdAt).toLocaleString()}
                                   </small>
                                 </div>
                               ))}
@@ -371,7 +377,7 @@ export default function CommunityPage() {
                               onClick={handleAddComment}
                               className="bg-purple-600 hover:bg-purple-700 px-5 rounded-lg font-semibold transition hover:cursor-pointer"
                             >
-                              Post
+                              Comment
                             </button>
                           </div>
                         </motion.div>
@@ -438,7 +444,7 @@ export default function CommunityPage() {
           </section>
 
           <aside className="w-1/4 border-l border-purple-700 p-6 overflow-y-auto bg-gray-900 text-purple-200">
-            <h2 className="text-xl font-semibold mb-6">Registered Users</h2>
+            <h2 className="text-xl font-semibold mb-6">Code Clashers</h2>
             <ul className="space-y-4">
               {users.map((user) => {
                 const initial = user.name?.[0]?.toUpperCase() || "?";
