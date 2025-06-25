@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/card";
 import Loader from "../components/ui/Loader";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 

@@ -15,6 +15,7 @@ import PlayWithFriends from "./pages/PlayWithFriends";
 import Room from "./pages/Room";
 import { Toaster } from "react-hot-toast";
 import CommunityPage from "./pages/CommunityPage";
+import Leaderboard from "./pages/Leaderboard";
 
 
 function App() {
@@ -111,6 +112,9 @@ function App() {
 
         {/* community */}
         <Route path="/community" element={isLoggedIn ? <CommunityPage/> : <Navigate to="/login" replace />} />
+
+        {/* leaderbord */}
+        <Route path="/leaderboard" element={isLoggedIn ? <Leaderboard /> : <Navigate to="/login" replace />} />
       </Routes>
     </>
   );
