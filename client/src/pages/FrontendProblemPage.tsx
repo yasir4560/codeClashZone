@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import MonacoEditor from "@monaco-editor/react";
 import Loader from "@/components/ui/Loader";
-import SubmissionModal from "@/components/ui/SubmissionModal";
+import SubmissionModal from "@/components/SubmissionModal";
 
 interface Problem {
   testScript: string;

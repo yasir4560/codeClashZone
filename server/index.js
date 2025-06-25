@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/connection');
+const path = require('path');
 
 const authRoute = require('./routes/user');
 const problemRoute = require('./routes/problems');
@@ -43,8 +44,9 @@ app.use('/api/', submissionRoute);
 app.use('/api/users/', submissionRoute);
 app.use('/api/dsa', dsaProblemRoute);
 app.use('/api/community',communityRoutes);
- app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //socket setup
 const server = http.createServer(app);

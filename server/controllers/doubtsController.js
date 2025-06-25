@@ -6,12 +6,20 @@ const users = require('../models/user');
 async function createDoubt(req, res, next){
     //console.log("create doubt called")
   try {
-    const {title, description, imageUrl} = req.body;
+    const {title, description} = req.body;
     const userId = req?.user?._id;
     if(!title || !description || !userId)
     {
        return res.status(400).json({success:false, message:"title, description and id is required"});
     }
+
+    let imageUrl = null;
+    if(req.file) {
+      imageUrl = `/uploads/${req.file.filename}`;
+    } else if (req.body.imageUrl) {
+      imageUrl = req.body.imageUrl;
+    }
+
 
     const doubt = await doubts.create({
         title,
