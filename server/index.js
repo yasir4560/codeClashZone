@@ -29,7 +29,7 @@ connectDB(process.env.MongoDB_URI);
 
 
 app.use(cors({
-    origin: '*',
+    origin: 'http://localhost:5173',
     credentials: true
 }));
 app.use(express.json());
@@ -47,6 +47,8 @@ app.use('/api/community',communityRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.get
 
 //socket setup
 const server = http.createServer(app);
