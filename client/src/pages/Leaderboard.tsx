@@ -28,7 +28,7 @@ function Leaderboard() {
     
     const timer = setTimeout(() => {
       axios
-        .get(`http://localhost:8000/api/leaderboard/ranks?filter=${filter}`, {
+        .get(`https://codeclashzone-2.onrender.com/api/leaderboard/ranks?filter=${filter}`, {
           withCredentials: true,
         })
         .then((res) => {

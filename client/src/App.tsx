@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const res = await fetch("http://localhost:8000/api/auth/me", {
+        const res = await fetch("https://codeclashzone-2.onrender.com/api/auth/me", {
           method: "GET",
           credentials: "include", // send cookies
         });
@@ -56,7 +56,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/auth/logout", {
+      const res = await fetch("https://codeclashzone-2.onrender.com/api/auth/logout", {
         method: "POST",
         credentials: "include", 
       });

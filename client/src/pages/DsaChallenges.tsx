@@ -52,7 +52,7 @@ export default function DsaChallenges() {
     try {
       setLoading(true);
       const res = await axios.get<DsaProblem[]>(
-        "http://localhost:8000/api/dsa",
+        "https://codeclashzone-2.onrender.com/api/dsa",
         { withCredentials: true }
       );
       setProblems(res.data);

@@ -34,7 +34,7 @@ export default function PlayWithFriends({ user }: PlayWithFriendsProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/dsa', {
+    fetch('https://codeclashzone-2.onrender.com/api/dsa', {
       credentials: 'include',
     })
       .then((res) => res.json())

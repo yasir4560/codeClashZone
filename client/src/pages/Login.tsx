@@ -23,7 +23,7 @@ export default function Login({ onLogin }: LoginProps) {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:8000/api/auth/login", {
+      const res = await fetch("https://codeclashzone-2.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function Login({ onLogin }: LoginProps) {
         setError(loginData.message || "Login failed");
       } else {
         //  refresh logic
-        const meRes = await fetch("http://localhost:8000/api/auth/me", {
+        const meRes = await fetch("https://codeclashzone-2.onrender.com/api/auth/me", {
           method: "GET",
           credentials: "include",
         });

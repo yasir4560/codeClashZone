@@ -31,14 +31,14 @@ export default function SubmissionsPage() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/auth/me", {
+        const res = await axios.get("https://codeclashzone-2.onrender.com/api/auth/me", {
           withCredentials: true,
         });
        
         const userId = res?.data?.userId;
 
         const submissionRes = await axios.get(
-          `http://localhost:8000/api/users/${userId}/submissions`,
+          `https://codeclashzone-2.onrender.com/api/users/${userId}/submissions`,
           { withCredentials: true }
         );
        

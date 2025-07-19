@@ -63,7 +63,7 @@ export default function DsaProblemPage() {
     async function fetchProblem() {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:8000/api/dsa/${problemId}`, {
+        const res = await axios.get(`https://codeclashzone-2.onrender.com/api/dsa/${problemId}`, {
           withCredentials: true,
         });
         setProblem(res.data);
@@ -140,7 +140,7 @@ export default function DsaProblemPage() {
     setTestResult(null);
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/dsa/${problem._id}/run`,
+        `https://codeclashzone-2.onrender.com/api/dsa/${problem._id}/run`,
         { code, language },
         { withCredentials: true }
       );
@@ -162,7 +162,7 @@ export default function DsaProblemPage() {
   setTestResult(null);
   try {
     const res = await axios.post(
-      `http://localhost:8000/api/dsa/${problem._id}/submit`,
+      `https://codeclashzone-2.onrender.com/api/dsa/${problem._id}/submit`,
       { code, language, timeTakenInSeconds: (problem.solveTimeLimit! * 60) - timer },
       { withCredentials: true }
     );
