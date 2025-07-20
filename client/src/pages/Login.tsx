@@ -44,7 +44,10 @@ export default function Login({ onLogin }: LoginProps) {
           credentials: "include",
         });
 
-       
+        if (!meRes.ok) {
+          setError("Could not fetch user data after login.");
+          return;
+        }
 
         const userData = await meRes.json();
         onLogin({ userId: userData.userId, name: userData.name, email: userData.email });
