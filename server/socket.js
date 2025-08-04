@@ -115,5 +115,29 @@ const { roomId, userId, username } = socket.data;
         console.log("❌ Disconnect:", socket.id);
       }
     });
+
+    socket.on('leave-room', ({ roomId, userId, username }) => {
+  if (roomUsers[roomId]) {
+    roomUsers[roomId].delete(userId);
+
+    const userList = Array.from(roomUsers[roomId], ([id, name]) => ({
+      userId: id,
+      username: name,
+    }));
+
+    io.to(roomId).emit('room-users', userList);
+
+    io.to(roomId).emit('chat-message', {
+      userId: 'system',
+      username: 'system',
+      message: `❌ ${username} has left the room.`,
+    });
+
+    if (roomUsers[roomId].size === 0) {
+      delete roomUsers[roomId];
+    }
+  }
+});
+
   });
 };
