@@ -38,7 +38,7 @@ export default function FrontendProblemPage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/frontend/${id}`, {
+      .get(`https://codeclashzone-2.onrender.com/api/frontend/${id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -110,7 +110,7 @@ export default function FrontendProblemPage() {
     if (!problem) return;
     try {
       await axios.post(
-        `http://localhost:8000/api/submit/${problem._id}`,
+        `https://codeclashzone-2.onrender.com/api/submit/${problem._id}`,
         {
           problemType: "Frontend",
           codeHtml: htmlCode,

@@ -38,7 +38,7 @@ async function handleLogin(req,res){
             return res.status(400).json({ message: 'Invalid password' });
         }
         const token = setUser(user);
-        res.cookie('token',token,{httpOnly:true, maxAge: 24 * 60 * 60 * 1000});
+        res.cookie('token',token,{httpOnly:true, maxAge: 24 * 60 * 60 * 1000, sameSite: 'None', secure: true, });
         res.status(200).json({ message: 'Login successful', user: { userId: user._id, name: user.name, email: user.email, role: user.role } });
     }
     catch(err){

@@ -62,7 +62,7 @@ export default function Room() {
   useEffect(() => {
     if (!problemId) return;
 
-    axios.get(`http://localhost:8000/api/dsa/${problemId}`, {
+    axios.get(`https://codeclashzone-2.onrender.com/api/dsa/${problemId}`, {
       withCredentials: true,
     })
       .then(res => {

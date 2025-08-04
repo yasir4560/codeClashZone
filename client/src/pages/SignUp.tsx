@@ -20,7 +20,7 @@ export default function Signup() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:8000/api/auth/signUp", {
+      const res = await fetch("https://codeclashzone-2.onrender.com/api/auth/signUp", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

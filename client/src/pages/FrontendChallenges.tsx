@@ -35,7 +35,7 @@ export default function FrontendChallenges() {
     try {
       setLoading(true);
       const res = await axios.get<Problem[]>(
-        "http://localhost:8000/api/problems/frontend",
+        "https://codeclashzone-2.onrender.com/api/problems/frontend",
         { withCredentials: true }
       );
       setProblems(res.data);

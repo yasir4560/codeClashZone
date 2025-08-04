@@ -17,7 +17,7 @@ export default function Navbar({ isLoggedIn, user, onLogout }: NavbarProps) {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8000/api/auth/logout", {
+      await fetch("https://codeclashzone-2.onrender.com/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });

@@ -30,7 +30,7 @@ interface Doubt {
   imageUrl?: string;
 }
 
-const API_BASE = "http://localhost:8000/api/community";
+const API_BASE = "https://codeclashzone-2.onrender.com/api/community";
 
 
 export default function CommunityPage() {
@@ -312,7 +312,7 @@ return (
                       }`}
                     >
                       <img
-                        src={`http://localhost:8000${doubt.imageUrl}`}
+                        src={`https://codeclashzone-2.onrender.com${doubt.imageUrl}`}
                         alt="Doubt"
                         className="object-cover w-full h-full rounded-lg"
                       />
