@@ -42,8 +42,7 @@ function sendWelcomeEmail(to, name) {
 
     <p style="font-size: 13px; color: #94a3b8;">
       With ❤️ from <br/>
-      <strong style="color: #c084fc;">Mehek Fatima</strong><br/>
-      Creator of CodeClashZone<br/>
+      <strong style="color: #c084fc;">Creators of CodeClashZone</strong><br/>
       <a href="mailto:mehekf.dev@gmail.com" style="color: #a78bfa;">mehekf.dev@gmail.com</a>
     </p>
   </div>
